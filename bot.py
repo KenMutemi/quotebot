@@ -1,5 +1,5 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-import logging
+import logging, sqlite3
 
 # Enable logging
 logging.basicConfig(
@@ -8,9 +8,15 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+# Connect to and query the sqlite database
+conn = sqlite3.connect('quoteDB')
+c = conn.cursor()
+c.execute('SELECT Quote, Quote_Category, Name FROM quotes1 ORDER BY RANDOM() LIMIT 1;');
+data = c.fetchone()
+
 # Define some command handlers
 def start(bot, update):
-    bot.sendMessage(update.message.chat_id, text='Hi!')
+    bot.sendMessage(update.message.chat_id, text="%s" % data[0])
 
 def help(bot, update):
     bot.sendMessage(update.message.chat_id, text='Help!')
