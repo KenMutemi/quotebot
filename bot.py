@@ -11,12 +11,20 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Connect to the database
-
 conn = sqlite3.connect('quoteDB', check_same_thread=False)
 c = conn.cursor()
 
+def category_names():
+    conn.row_factory = lambda cursor, row: row[0]
+    c = conn.cursor()
+    category_names = c.execute('SELECT Quote_Category FROM quotes1;').fetchall();
+    custom_keyboard = [[
+        KeyboardButton(category_name) for category_name in category_names
+        ]]
+    reply_markup = ReplyKeyboardMarkup(custom_keyboard)
+    return reply_markup
+
 def get_random_quote(index):
-    # Connect to and query the sqlite database
     c.execute('SELECT Quote, Quote_Category, Name FROM quotes1 ORDER BY RANDOM() LIMIT 1;');
     data = c.fetchone()
     return data[index]
@@ -27,20 +35,14 @@ def get_quote_by_category(index, args):
     data = c.fetchone()
     return data[index]
 
-custom_keyboard = [[ KeyboardButton("Health"),
-    KeyboardButton("Wealth"),
-    KeyboardButton("Money"),
-    KeyboardButton("Women")]]
-reply_markup = ReplyKeyboardMarkup(custom_keyboard)
-
 # Define some command handlers
 def start(bot, update):
-    text = "My name is The Thinker, and I'm a genius. I collect lots of great quotations from great people like me. If you would like to see some of them just type /category [category] and I will produce a random quote from my stash of wisdom."
+    text = "My name is The Thinker, and I'm a genius. I collect lots of great quotations from great people like me. If you would like to see some of them just type /category [category] and I will produce a random quote from my stash of wisdom." + category_names()
     bot.sendMessage(update.message.chat_id, text=text)
 
 def category(bot, update):
     bot.sendMessage(chat_id=update.message.chat_id, text="Meow. Here's a list of the quote categories I have.",
-            reply_markup=reply_markup)
+            reply_markup=category_names())
 
 def help(bot, update):
     bot.sendMessage(update.message.chat_id, text='Help!')
