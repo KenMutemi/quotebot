@@ -1,7 +1,7 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, InlineQueryHandler, Filters
 from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, ReplyKeyboardMarkup, KeyboardButton, Emoji
 from uuid import uuid4
-import logging, sqlite3, re
+import logging, sqlite3, re, itertools, math
 
 # Enable logging
 logging.basicConfig(
@@ -18,10 +18,13 @@ def category_names():
     conn.row_factory = lambda cursor, row: row[0]
     c = conn.cursor()
     category_names = c.execute('SELECT Quote_Category FROM quotes1;').fetchall();
-    custom_keyboard = [[
-        KeyboardButton(category_name) for category_name in category_names
-        ]]
+
+    custom_keyboard = [
+        KeyboardButton(category_name) for category_name in set(category_names)
+    ]
+    custom_keyboard = [custom_keyboard[2*i : 2*(i+1)] for i in xrange(int(math.ceil(len(category_names)/2)))]
     reply_markup = ReplyKeyboardMarkup(custom_keyboard)
+
     return reply_markup
 
 def get_random_quote(index):
@@ -31,9 +34,13 @@ def get_random_quote(index):
 
 def get_quote_by_category(index, args):
     category = ''.join(args)
-    c.execute('SELECT Quote, Quote_Category, Name FROM quotes1 WHERE Quote_Category = "' + category.title() + '" ORDER BY RANDOM() LIMIT 1;');
-    data = c.fetchone()
-    return data[index]
+    try:
+        c.execute('SELECT Quote, Quote_Category, Name FROM quotes1 WHERE Quote_Category = "' + category.title() + '" ORDER BY RANDOM() LIMIT 1;');
+    except (TypeError, OperationalError):
+        pass
+    quote = c.fetchone()
+
+    return quote[index] + " ~ " + quote[2]
 
 # Define some command handlers
 def start(bot, update):
