@@ -27,20 +27,36 @@ def category_names():
 
     return reply_markup
 
+def author_names():
+    conn.row_factory = lambda cursor, row: row[0]
+    c = conn.cursor()
+    author_names = c.execute('SELECT Name FROM quotes1;').fetchall();
+
+    custom_keyboard = [
+        KeyboardButton(author_name) for author_name in set(author_names)
+    ]
+    custom_keyboard = [custom_keyboard[2*i : 2*(i+1)] for i in xrange(int(math.ceil(len(author_names)/2)))]
+    reply_markup = ReplyKeyboardMarkup(custom_keyboard)
+
+    return reply_markup
+
 def get_random_quote(index):
     c.execute('SELECT Quote, Quote_Category, Name FROM quotes1 ORDER BY RANDOM() LIMIT 1;');
     data = c.fetchone()
     return data[index]
 
 def get_quote_by_category(index, args):
-    category = ''.join(args)
-    try:
-        c.execute('SELECT Quote, Quote_Category, Name FROM quotes1 WHERE Quote_Category = "' + category.title() + '" ORDER BY RANDOM() LIMIT 1;');
-    except (TypeError, OperationalError):
-        pass
+    
+    c.execute('SELECT Quote, Quote_Category, Name FROM quotes1 WHERE Name = "' + args + '" ORDER BY RANDOM() LIMIT 1;');
     quote = c.fetchone()
+    
+    try:
+        return quote[index] + " ~ " + quote[2] 
+    except TypeError:
+        c.execute('SELECT Quote, Quote_Category, Name FROM quotes1 WHERE Quote_Category = "' + args + '" ORDER BY RANDOM() LIMIT 1;');
+        quote = c.fetchone()
 
-    return quote[index] + " ~ " + quote[2]
+        return quote[index] + " ~ " + quote[2]
 
 # Define some command handlers
 def start(bot, update):
@@ -48,8 +64,12 @@ def start(bot, update):
     bot.sendMessage(update.message.chat_id, text=text)
 
 def category(bot, update):
-    bot.sendMessage(chat_id=update.message.chat_id, text="Meow. Here's a list of the quote categories I have.",
+    bot.sendMessage(chat_id=update.message.chat_id, text="Bleep. Bloop.",
             reply_markup=category_names())
+
+def author(bot, update):
+    bot.sendMessage(chat_id=update.message.chat_id, text="Bleep. Bloop.",
+            reply_markup=author_names())
 
 def help(bot, update):
     bot.sendMessage(update.message.chat_id, text='Help!')
@@ -74,6 +94,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("category", category))
+    dp.add_handler(CommandHandler("author", author))
 
     # On nocommand
     dp.add_handler(MessageHandler([Filters.text], user_reply))
