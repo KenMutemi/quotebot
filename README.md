@@ -3,12 +3,13 @@
 A Telegram bot built with Python that provides quotes based on the quote category and author.
 
 ## Installation
+Clone the repository.  
+Obtain your token from BotFather by following this [tutorial](https://core.telegram.org/bots/).  
+Then run the following commands:  
 ```
-echo TOKEN=your-toke-here
+echo TOKEN=your-toke-here  
 python bot.py
 ```
-Provide code examples and explanations of how to get the project.
-
 ## Contributors
 
 [Kennedy Mutemi](http://kennedymutemi.com/)
@@ -18,7 +19,7 @@ Provide code examples and explanations of how to get the project.
 The MIT License
 ===============
 
-Copyright (c) 2009-2016 Kennedy Mutemi
+Copyright (c) 2016 Kennedy Mutemi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
