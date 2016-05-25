@@ -1,7 +1,7 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, InlineQueryHandler, Filters
 from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, ReplyKeyboardMarkup, KeyboardButton, Emoji
 from uuid import uuid4
-import logging, sqlite3, re, itertools, math
+import logging, sqlite3, re, itertools, math, os
 
 # Enable logging
 logging.basicConfig(
@@ -60,7 +60,7 @@ def get_quote_by_category(index, args):
 
 # Define some command handlers
 def start(bot, update):
-    text = "My name is The Thinker, and I'm a genius. I collect lots of great quotations from great people like me. If you would like to see some of them just type /category [category] and I will produce a random quote from my stash of wisdom." + category_names()
+    text = "Hello, I'm The Thinker, ...and I'm a thinker. I collect lots of great quotations from great people. If you would like to see some of them just type /category and /author"
     bot.sendMessage(update.message.chat_id, text=text)
 
 def category(bot, update):
@@ -72,7 +72,7 @@ def author(bot, update):
             reply_markup=author_names())
 
 def help(bot, update):
-    bot.sendMessage(update.message.chat_id, text='Help!')
+    bot.sendMessage(update.message.chat_id, text="Hello, I'm The Thinker, ...and I'm a thinker. I collect lots of great quotations from great people. If you would like to see some of them just type /category and /author")
 
 def user_reply(bot, update):
     bot.sendMessage(update.message.chat_id, text=get_quote_by_category(0, update.message.text))
@@ -85,7 +85,7 @@ def error(bot, update, error):
 
 def main():
     # The EventHandler
-    updater = Updater("227558452:AAG3aRfAMhBcQ8dvUymJ1rXVBA5BnjoPlZQ")
+    updater = Updater(os.getenv('TOKEN'))
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
