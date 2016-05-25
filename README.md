@@ -1,4 +1,4 @@
-## Synopsis
+# quotebot
 
 A Telegram bot built with Python that provides quotes based on the quote category and author.
 
