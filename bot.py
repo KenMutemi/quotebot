@@ -1,7 +1,10 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, InlineQueryHandler, Filters
 from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, ReplyKeyboardMarkup, KeyboardButton, Emoji
 from uuid import uuid4
-import logging, sqlite3, itertools, math, os
+import logging, sqlite3, itertools, math, os, sys
+
+reload(sys)  
+sys.setdefaultencoding('utf8')
 
 # Enable logging
 logging.basicConfig(
