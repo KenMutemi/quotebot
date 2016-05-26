@@ -1,7 +1,7 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, InlineQueryHandler, Filters
 from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, ReplyKeyboardMarkup, KeyboardButton, Emoji
 from uuid import uuid4
-import logging, sqlite3, re, itertools, math, os
+import logging, sqlite3, itertools, math, os
 
 # Enable logging
 logging.basicConfig(
@@ -51,16 +51,16 @@ def get_quote_by_category(index, args):
     quote = c.fetchone()
     
     try:
-        return quote[index] + " ~ " + quote[2] 
+        return Emoji.THOUGHT_BALLOON + "\n" + quote[index] + " ~ " + quote[2]
     except TypeError:
         c.execute('SELECT Quote, Quote_Category, Name FROM quotes1 WHERE Quote_Category = "' + args + '" ORDER BY RANDOM() LIMIT 1;');
         quote = c.fetchone()
 
-        return quote[index] + " ~ " + quote[2]
+        return quote[index] + " ~ " + quote[2] + "\n" + Emoji.THOUGHT_BALLOON
 
 # Define some command handlers
 def start(bot, update):
-    text = "Hello, I'm The Thinker, ...and I'm a thinker. I collect lots of great quotations from great people. If you would like to see some of them just type /category and /author"
+    text = "Hello, I'm The Thinker, ...and I'm a thinker. I collect lots of great quotations from great people. If you would like to see some of them just type /category or /author"
     bot.sendMessage(update.message.chat_id, text=text)
 
 def category(bot, update):
@@ -72,7 +72,7 @@ def author(bot, update):
             reply_markup=author_names())
 
 def help(bot, update):
-    bot.sendMessage(update.message.chat_id, text="Hello, I'm The Thinker, ...and I'm a thinker. I collect lots of great quotations from great people. If you would like to see some of them just type /category and /author")
+    bot.sendMessage(update.message.chat_id, text="@thethinkerbot finds you great quotes from great minds. /category - get quote by category\n /author - get quote by author")
 
 def user_reply(bot, update):
     bot.sendMessage(update.message.chat_id, text=get_quote_by_category(0, update.message.text))
