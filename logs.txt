@@ -1,1 +1,0 @@
-Server 'bot.py' crashed with exit code 1.  Respawning..
